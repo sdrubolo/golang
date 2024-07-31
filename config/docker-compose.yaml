@@ -1,0 +1,11 @@
+services:
+  
+  api:
+    ports:
+      - "8080:8080"
+    image: songs:${VERSION}
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - ${SONGS_PATH}:/app/songs
