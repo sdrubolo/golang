@@ -1,0 +1,12 @@
+services:
+  
+  pull-repo:
+    image: pull-repo:${VERSION}
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - REPO_PATH=${REPO_PATH}
+      - REPO_NAME=${REPO_NAME}
+    volumes:
+      - ${REPO_PATH}:/songs
