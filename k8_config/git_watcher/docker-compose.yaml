@@ -1,0 +1,7 @@
+services:
+  
+  pull-repo:
+    image: pull-repo:${VERSION}
+    build:
+      context: .
+      dockerfile: ./Dockerfile

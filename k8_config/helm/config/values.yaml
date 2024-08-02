@@ -1,0 +1,4 @@
+pull_repo:
+  repoName: "https://github.com/sdrubolo/songs.git"
+  namespace: "go-config"
+  

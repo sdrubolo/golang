@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.pull_repo.namespace }}
+  name: pull-repo-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pull-repo
+  template:
+    metadata:
+      labels:
+        app: pull-repo
+    spec:
+      containers:
+        - name: pull-repo
+          image: 'pull-repo:0.1'
+          volumeMounts:
+            - name: repo-volume
+              mountPath: /repo
+          env:
+            - name: REPO_NAME
+              value: {{ .Values.pull_repo.repoName }}
+      volumes:
+        - name: repo-volume
+          persistentVolumeClaim:
+            claimName: repo-pvc

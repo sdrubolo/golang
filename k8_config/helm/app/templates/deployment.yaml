@@ -1,0 +1,66 @@
+# First, add the Service API
+apiVersion: v1
+# This will be the Service setup
+kind: Service
+metadata:
+  # Your service name
+  namespace: {{ .Values.song.namespace }}
+  name: app-external-service
+  labels:
+    app: {{ .Values.song.name }}
+spec:
+  selector:
+    # selector that matches the pod
+    app: {{ .Values.song.name }}
+  # type of service
+  type: LoadBalancer     
+  ports:
+  # port for exposing the service        
+  - port: 3000
+    name: song-web
+---
+# First, add the API
+apiVersion: apps/v1
+# This will be the deployment setup
+kind: Deployment
+metadata:
+  # Name your Deployment here
+  namespace: {{ .Values.song.namespace }}
+  name: song-dep
+  labels:
+    # label your deployment
+    app: song-app
+spec:
+  # The number of pods/replicas to run
+  replicas: {{ .Values.song.replicas }}         
+  selector:
+    matchLabels:
+    # selector to match the pod
+      app: {{ .Values.song.name }} 
+  template:
+    metadata:
+      labels:
+      # label your pod
+        app: {{ .Values.song.name }}
+    spec:
+      containers:
+      - name: {{ .Values.song.name }}
+        image: {{ .Values.song.name }}:{{ .Values.song.version }}
+        volumeMounts:
+          - name: repo-volume
+            mountPath: /repo
+        env:
+          - name: LISTEN_PATH
+            value: {{ .Values.song.listen_path }}
+          - name: FILE_PATH
+            value: {{ .Values.song.filepath }}
+        # never pull the image policy
+        imagePullPolicy: {{ .Values.song.pullPolicy }}
+        ports:
+        # port for running the container
+        - containerPort: 3000   
+          name: song-web
+      volumes:
+        - name: repo-volume
+          persistentVolumeClaim:
+            claimName: repo-pvc

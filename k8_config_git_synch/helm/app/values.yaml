@@ -1,0 +1,9 @@
+song:
+  namespace: "go-config"
+  name: "songs"
+  version: "0.1"
+  replicas: "1"
+  pullPolicy: "Never"
+  listen_path: "/repo"
+  filepath: "/repo/config/albums.json"
+  touch: "touch"

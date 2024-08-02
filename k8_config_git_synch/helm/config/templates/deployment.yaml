@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.pull_repo.namespace }}
+  name: pull-repo-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pull-repo
+  template:
+    metadata:
+      labels:
+        app: pull-repo
+    spec:
+#      containers:
+#        - name: pull-repo
+#          image: 'pull-repo:0.1'
+#          volumeMounts:
+#            - name: repo-volume
+#              mountPath: /repo
+#          env:
+#            - name: REPO_NAME
+#              value: {{ .Values.pull_repo.repoName }}
+#      volumes:
+#        - name: repo-volume
+#          persistentVolumeClaim:
+#            claimName: repo-pvc
+      containers:
+      - name: pull-repo
+        image: registry.k8s.io/git-sync/git-sync:v4.2.4
+        args:
+         - --repo={{ .Values.pull_repo.repoName }}
+         - --period=30s
+         - --root=/repo
+         - --link=config
+         - --touch-file=touch
+        volumeMounts:
+          - name: repo-volume
+            mountPath: /repo
+      volumes:
+        - name: repo-volume
+          persistentVolumeClaim:
+            claimName: repo-pvc
