@@ -7,6 +7,10 @@ This folder contains:
 - a git-sync which will look for updates of the git repository
 - a simple app which will return the content of the file
 
+# Build App
+
+Naviage to /app fold and run `VERSION=0.1 docker-compose build`
+
 ## To run script container
 
 `helm install go-config . --namespace go-config --create-namespace --wait`

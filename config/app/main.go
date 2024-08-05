@@ -40,6 +40,7 @@ func (f *FileWatcher) readSongs() error {
 	// Convert the byte slice to a string and print it
 
 	if err != nil {
+		fmt.Printf("failed to read file %s with reason %s\n", f.file, err)
 		return err
 	}
 
@@ -47,6 +48,7 @@ func (f *FileWatcher) readSongs() error {
 	err = json.Unmarshal(content, &songs)
 
 	if err != nil {
+		fmt.Printf("readSongs error during Unmarshal %s\n", err)
 		return err
 	}
 	f.store.Set("file-content", songs, -1)
@@ -55,6 +57,9 @@ func (f *FileWatcher) readSongs() error {
 }
 
 func (f *FileWatcher) watch() (*fsnotify.Watcher, error) {
+
+	fmt.Printf("watching in %s\n", f.dir)
+	fmt.Printf("on file %s\n", f.file)
 
 	var (
 		// Wait 100ms for new events; each new event resets the timer.
@@ -134,6 +139,7 @@ func main() {
 	)
 
 	time.Sleep(10 * time.Second)
+
 	goCache := gocache.New(gocache.NoExpiration, 5*time.Minute)
 
 	fileWatcher := FileWatcher{
