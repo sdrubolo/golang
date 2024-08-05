@@ -7,7 +7,6 @@ import (
 	"math"
 	"net/http"
 	"os"
-	"path/filepath"
 	"sync"
 	"time"
 
@@ -37,9 +36,7 @@ type FileWatcher struct {
 }
 
 func (f *FileWatcher) readSongs() error {
-	fmt.Printf("readSongs called for %s\n", filepath.Base(f.dir+"/"+f.file))
-	file := f.dir + "/" + f.file
-	content, err := os.ReadFile(file)
+	content, err := os.ReadFile(f.file)
 	// Convert the byte slice to a string and print it
 
 	if err != nil {
@@ -50,7 +47,6 @@ func (f *FileWatcher) readSongs() error {
 	err = json.Unmarshal(content, &songs)
 
 	if err != nil {
-		fmt.Printf("readSongs error during Unmarshal %s\n", err)
 		return err
 	}
 	f.store.Set("file-content", songs, -1)
@@ -61,7 +57,6 @@ func (f *FileWatcher) readSongs() error {
 func (f *FileWatcher) watch() (*fsnotify.Watcher, error) {
 
 	var (
-		file = filepath.Clean(f.dir + "/" + f.file)
 		// Wait 100ms for new events; each new event resets the timer.
 		waitFor = 100 * time.Millisecond
 
@@ -100,8 +95,8 @@ func (f *FileWatcher) watch() (*fsnotify.Watcher, error) {
 					return
 				}
 				if event.Op&fsnotify.Write == fsnotify.Write {
-					fmt.Printf("event received for file %s => %s\n", file, event)
-					if event.Name != file {
+					fmt.Printf("event received for file %s => %s\n", f.file, event)
+					if event.Name != f.file {
 						continue
 					}
 					// Get timer.
@@ -133,14 +128,17 @@ func (f *FileWatcher) watch() (*fsnotify.Watcher, error) {
 }
 
 func main() {
-	filepath := "./songs"
-	filename := "albums.json"
+	var (
+		listen_to = os.Getenv("LISTEN_PATH")
+		filename  = os.Getenv("FILE_PATH")
+	)
 
+	time.Sleep(10 * time.Second)
 	goCache := gocache.New(gocache.NoExpiration, 5*time.Minute)
 
 	fileWatcher := FileWatcher{
 		store: goCache,
-		dir:   filepath,
+		dir:   listen_to,
 		file:  filename,
 	}
 
