@@ -36,7 +36,6 @@ type FileWatcher struct {
 }
 
 func (f *FileWatcher) readSongs() error {
-	fmt.Printf("readSongs called for %s\n", f.file)
 	file := f.file
 	content, err := os.ReadFile(file)
 	// Convert the byte slice to a string and print it
@@ -58,9 +57,6 @@ func (f *FileWatcher) readSongs() error {
 }
 
 func (f *FileWatcher) watch() (*fsnotify.Watcher, error) {
-
-	fmt.Printf("watching %s\n", f.dir)
-	fmt.Printf("readding %s\n", f.file)
 
 	var (
 		file = f.file
@@ -101,7 +97,6 @@ func (f *FileWatcher) watch() (*fsnotify.Watcher, error) {
 				if !ok {
 					return
 				}
-				fmt.Printf("event received for file %s => %s\n", file, event)
 				if event.Op&fsnotify.Write == fsnotify.Write {
 
 					if event.Name != file {
